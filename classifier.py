@@ -154,7 +154,10 @@ def simple_evaluation(classifiers,evaluation_data):
     emotions = ['anger','anticipation', 'disgust', 'fear', 'joy', 'love', 'optimism', 'pessimism', 'sadness', 'surprise', 'trust', 'neutral']
     total = len(evaluation_data[0])*12
     corrects = 0
+    #actual,classified
+    confusion = [[0.0,0.0],[0.0,0.0]]
     for i in range(len(classifiers)):
+        local_confusion = [[0.0,0.0],[0.0,0.0]]
         evaluation_vector     = [ev[0] for ev in evaluation_data[i]]
         evaluation_result   = [ev[1] for ev in evaluation_data[i]]
         tot = len(evaluation_data[0])
@@ -163,17 +166,33 @@ def simple_evaluation(classifiers,evaluation_data):
             analysis_result = analyse_text(classifiers[i], evaluation_vector[index])
             result = analysis_result
             #print(str(result[0])+", "+str(evaluation_result[index]))
+            local_confusion[evaluation_result[index]][result[0]] = local_confusion[evaluation_result[index]][result[0]] + 1
+            confusion[evaluation_result[index]][result[0]] = confusion[evaluation_result[index]][result[0]] + 1
             corrects += 1 if result[0] == evaluation_result[index] else 0
             crr += 1 if result[0] == evaluation_result[index] else 0
         print(emotions[i]+" accuracy: "+str(crr*100.0/tot))
+        local_precision = local_confusion[1][1]/(local_confusion[1][1] + local_confusion[0][1])
+        local_recall = local_confusion[1][1]/(local_confusion[1][1] + local_confusion[1][0])
+        local_f1 = 2*(local_precision*local_recall)/(local_precision + local_recall)
+        print(emotions[i]+" precision: "+str(local_precision))
+        print(emotions[i]+" recall: "+str(local_recall))
+        print(emotions[i]+" f1: "+str(local_f1))
     print("\n")
+    precision = confusion[1][1]/(confusion[1][1] + confusion[0][1])
+    recall = confusion[1][1]/(confusion[1][1] + confusion[1][0])
+    f1 = 2*(precision*recall)/(precision + recall)
     print("overall accuracy: "+str(corrects * 100.0 / total))
+    print("overall precision: "+str(precision))
+    print("overall recall: "+str(recall))
+    print("overall f1: "+str(f1))
+    print()
+    
+print("beginning preprocessing")
+training_data, evaluation_data = preprocessing_step()
+print("fitting classifiers")
+classifiers = training_step(training_data)
+print("evaluating")
+simple_evaluation(classifiers,evaluation_data)
 
-#print("beginning preprocessing")
-#training_data, evaluation_data = preprocessing_step()
-#print("fitting classifiers")
-#classifiers = training_step(training_data)
-#print("evaluating")
-#print(simple_evaluation(classifiers,evaluation_data))
+#train_test()
 
-train_test()
