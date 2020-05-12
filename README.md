@@ -34,7 +34,7 @@ usage:
     
     the model files were too big for github, so I will link using dropbox:
     
-        https://www.dropbox.com/s/orjnzu0uppzdgu0/classifier%20files.zip?dl=0
+    https://www.dropbox.com/s/orjnzu0uppzdgu0/classifier%20files.zip?dl=0
 
 features used:
 
