@@ -104,8 +104,11 @@ Bernouli Naive Bayes:
 Multi-Layer Perceptron model:
 
   anger accuracy: 76.20320855614973
+  
   anger precision: 0.6951219512195121
+  
   anger recall: 0.47107438016528924
+  
   anger f1: 0.5615763546798029
   anticipation accuracy: 58.02139037433155
   anticipation precision: 0.7479674796747967
