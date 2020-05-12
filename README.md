@@ -20,13 +20,13 @@ usage:
   
     This runs a 80/20 split on the data in trainfile and then reports the results
     
-  if only block 1 is left uncommented: 
+  if only block 2 is left uncommented: 
 
     python3 classifier.py <trainfile> <testfile>
   
     This trains on trainfile and tests on testfile, printing the results
     
-  if only block 1 is left uncommented: 
+  if only block 3 is left uncommented: 
 
     python3 classifier.py <trainfile> <testfile>
   
