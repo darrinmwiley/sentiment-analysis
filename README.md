@@ -40,11 +40,11 @@ features used:
 
 classifiers used:
 
-    I used a neural model as well as a Bernouli Naive Bayes model, as one may outperform the other due to the test data size. 
+   I used a neural model as well as a Bernouli Naive Bayes model, as one may outperform the other due to the test data size. 
 
 Results:
 
-    Some emotions were better with Naive Bayes, others better with the neural model. All statistics for individual emotions as well as overall are included below. These can also be reproduced by running the program yourself.
+   Some emotions were better with Naive Bayes, others better with the neural model. All statistics for individual emotions as well as overall are included below. These can also be reproduced by running the program yourself.
 
 Bernouli Naive Bayes:
 
