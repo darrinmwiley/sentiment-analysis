@@ -19,6 +19,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.neural_network import MLPClassifier
+from joblib import dump, load
 import sys
 
 
@@ -29,7 +30,7 @@ def tokenize (text):
     nopunct = regex.sub(" ", text.lower())
     return [token.text for token in tok.tokenizer(nopunct)]
 
-def get_data(filename):
+def pre_data(filename):
     reviews = pd.read_json(filename).T
 
     #count number of occurences of each word
@@ -81,6 +82,10 @@ def get_data(filename):
         bi2index[word] = len(indices)
         indices.append(word)
 
+    return vocab2index, sub2index, bi2index, indices, reviews
+
+def get_data(vocab2index, sub2index, bi2index, indices, reviews):
+
     Z = [[],[],[],[],[],[],[],[],[],[],[],[]]
     #              74       69             72        71     88       89      71          65            73         87        81        81
     emotions = ['anger','anticipation', 'disgust', 'fear', 'joy', 'love', 'optimism', 'pessimism', 'sadness', 'surprise', 'trust', 'neutral']
@@ -119,27 +124,54 @@ def split_data(data):
     return training_data, evaluation_data
 
 def preprocessing_step():
-    data = get_data("train.txt")
+    data = get_data(sys.argv[1])
 
     return split_data(data)
 
 def train_test():
     print("beginning train/test")
-    train = get_data(sys.argv[1])
+    vocab2index, sub2index, bi2index, indices, reviews = pre_data(sys.argv[1])
+    train = get_data(vocab2index, sub2index, bi2index,indices, reviews)
     print("test data formatted. formatting training data.")
-    test = get_data(sys.argv[2])
+    test = get_data(vocab2index, sub2index, bi2index,indices, pd.read_json(sys.argv[2]).T)
     print("data formatted, training classifiers")
-    classifiers = training_step(train)
+    bayes, neural = training_step(train)
+    print("dumping models")
+    dump(bayes, "bayes.joblib")
+    dump(neural, "neural.joblib")
+    print("dump complete")
     print("classifiers trained, beginning evaluation")
-    simple_evaluation(classifiers, test)
+    simple_evaluation(bayes, test)
+    print("\n")
+    simple_evaluation(neural, test)
+
+def test():
+    print("loading classifiers")
+    vocab2index, sub2index, bi2index, indices, reviews = pre_data(sys.argv[1])
+    print("creating indices")
+    train = get_data(vocab2index, sub2index, bi2index,indices, reviews)
+    print("indices created. formatting training data.")
+    test = get_data(vocab2index, sub2index, bi2index,indices, pd.read_json(sys.argv[2]).T)
+    bayes = load('bayes.joblib')
+    neural = load('neural.joblib')
+    print("beginning evaluation")
+    print("Bayes:")
+    simple_evaluation(bayes, test)
+    print("\n")
+    print("Neural:")
+    simple_evaluation(neural, test)
+
 
 def training_step(data):
-    ret = []
+    bayes = []
+    neural = []
     for i in range(len(data)):
+        print("training "+str(i))
         training_text = [dat[0] for dat in data[i]]
         training_result = [dat[1] for dat in data[i]]
-        ret.append(BernoulliNB().fit(training_text, training_result))
-    return ret
+        bayes.append(BernoulliNB().fit(training_text, training_result))
+        neural.append(MLPClassifier(alpha=1, max_iter=100).fit(training_text, training_result))
+    return neural, bayes
 
 
 def analyse_text(classifier, vector):
@@ -165,7 +197,6 @@ def simple_evaluation(classifiers,evaluation_data):
         for index in range(0, tot):
             analysis_result = analyse_text(classifiers[i], evaluation_vector[index])
             result = analysis_result
-            #print(str(result[0])+", "+str(evaluation_result[index]))
             local_confusion[evaluation_result[index]][result[0]] = local_confusion[evaluation_result[index]][result[0]] + 1
             confusion[evaluation_result[index]][result[0]] = confusion[evaluation_result[index]][result[0]] + 1
             corrects += 1 if result[0] == evaluation_result[index] else 0
@@ -185,14 +216,23 @@ def simple_evaluation(classifiers,evaluation_data):
     print("overall precision: "+str(precision))
     print("overall recall: "+str(recall))
     print("overall f1: "+str(f1))
-    print()
-    
-print("beginning preprocessing")
-training_data, evaluation_data = preprocessing_step()
-print("fitting classifiers")
-classifiers = training_step(training_data)
-print("evaluating")
-simple_evaluation(classifiers,evaluation_data)
+    print("\n")
 
+##THIS IS TO DO TRAIN/TEST SPLIT ON ARGS[1]
+#print("beginning preprocessing")
+#training_data, evaluation_data = preprocessing_step()
+#print("fitting classifiers")
+#classifiers = training_step(training_data)
+#print("evaluating")
+#simple_evaluation(classifiers,evaluation_data)
+
+##THIS IS TO TRAIN ON ARGS[1] AND TEST ON ARGS[2]
 #train_test()
+
+##THIS LOADS PRE TRAINED MODELS
+##MUST BE CALLED WITH ARGS[1] = TRAIN AND ARGS[2] = TEST SINCE IT NEEDS
+##TO BUILD THE INDICES. ALSO MAKE SURE THAT NEURAL.JOBLIB AND BAYES.JOBLIB 
+##ARE IN THE SAME DIRECTORY AS CLASSIFIER.PY
+test()
+
 
