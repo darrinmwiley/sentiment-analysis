@@ -1,6 +1,10 @@
+#this should be all dependencies needed:
+
 #pip3 install spacy
 #pip3 install numpy
 #pip3 install pandas
+#pip3 install sklearn
+#pip3 install torch
 #python3 -m spacy download en
 
 import torch
