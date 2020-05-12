@@ -43,7 +43,7 @@ classifiers used:
 
 Results:
 
-  Some emotions were better with Naive Bayes, others better with the neural model. All statistics for individual emotions as well as overall are included below. These can also be reproduced by 
+  Some emotions were better with Naive Bayes, others better with the neural model. All statistics for individual emotions as well as overall are included below. These can also be reproduced by running the program yourself.
 
 Bernouli Naive Bayes:
 
