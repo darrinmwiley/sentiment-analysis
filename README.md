@@ -31,6 +31,10 @@ usage:
     python3 classifier.py <trainfile> <testfile>
   
     This uses trainfile to build the index vectors and then tests on testfile, but loads the models instead of training them.     Use this only if you have the two model files bayes.joblib and neural.joblib in the same directory.
+    
+    the model files were too big for github, so I will link using dropbox:
+    
+        https://www.dropbox.com/s/orjnzu0uppzdgu0/classifier%20files.zip?dl=0
 
 features used:
 
